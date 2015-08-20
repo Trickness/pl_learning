@@ -18,4 +18,18 @@ int main(){
 
     cout << "td [simple string] : " << to_simple_string(td) << endl;
     cout << "td [to iso string  : " << to_iso_string(td) << endl;
+
+    cout << "td2 [simple string] : " << to_simple_string(td2) << endl;
+    cout << "td2 [to iso string  : " << to_iso_string(td2) << endl;
+
+    hours h2(-11);
+    if (h2.is_negative())
+        cout << "h2 is a negative" << endl;
+    else
+        cout << "h2 is a positive" << endl;
+
+    time_duration td4(neg_infin);
+
+    if (td4.is_neg_infinity())
+        cout << "td4 is a negative infinitity time duartion" << endl;   
 }
