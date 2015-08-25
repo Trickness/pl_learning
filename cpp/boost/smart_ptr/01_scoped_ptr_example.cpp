@@ -15,5 +15,8 @@ class test_class{
 
 int main(){
     boost::scoped_ptr<test_class> p(new test_class());
+    assert(p);      // false if ptr is nullptr
+    // Do NOT try to delete scoped_ptr, It will crash your program
+    
     return 0;
 }
