@@ -1,5 +1,7 @@
 #include <iostream>
 #include <boost/smart_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <vector>
 
 using namespace std;
 
@@ -13,5 +15,10 @@ int main(){
     *int_ptr = 20;
     cout << *p2 << endl;
     cout << "Count of p is " << p2.use_count() << endl;
+
+    auto sp = boost::make_shared<string>("make_shared");
+    auto spv= boost::make_shared<vector<int> >(10,2);
+    for(auto i = spv->begin(); i != spv->end(); ++i)
+        cout << *i << endl;
     return 0;
 }
