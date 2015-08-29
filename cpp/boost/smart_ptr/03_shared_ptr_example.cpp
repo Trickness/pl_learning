@@ -2,6 +2,8 @@
 #include <boost/smart_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <vector>
+#include <string>
+#include <map>
 
 using namespace std;
 
@@ -20,5 +22,13 @@ int main(){
     auto spv= boost::make_shared<vector<int> >(10,2);
     for(auto i = spv->begin(); i != spv->end(); ++i)
         cout << *i << endl;
+
+
+    typedef boost::shared_ptr<string> sp_t;
+    map<sp_t, int> m;
+
+    sp_t sp2(new string("one"));
+    m[sp2] = 111;
+    cout << sp << endl;     // use smart_ptr::operator<< to print pointer's value
     return 0;
 }
