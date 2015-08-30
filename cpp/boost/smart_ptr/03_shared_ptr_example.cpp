@@ -7,6 +7,10 @@
 
 using namespace std;
 
+void any_func(void *p){
+    cout << "some operate" << endl;
+}
+
 int main(){
     boost::shared_ptr<int> p(new int);
     *p = 10;
@@ -30,5 +34,7 @@ int main(){
     sp_t sp2(new string("one"));
     m[sp2] = 111;
     cout << sp << endl;     // use smart_ptr::operator<< to print pointer's value
+
+    boost::shared_ptr<void> p3(nullptr, any_func);  // nullptr and specify deleter
     return 0;
 }
