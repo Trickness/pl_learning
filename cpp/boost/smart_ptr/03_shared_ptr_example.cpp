@@ -11,6 +11,11 @@ void any_func(void *p){
     cout << "some operate" << endl;
 }
 
+bool bool_test(void){
+    boost::shared_ptr<int> p(new int(10));
+    return static_cast<bool>(p);
+}
+
 int main(){
     boost::shared_ptr<int> p(new int);
     *p = 10;
@@ -36,5 +41,6 @@ int main(){
     cout << sp << endl;     // use smart_ptr::operator<< to print pointer's value
 
     boost::shared_ptr<void> p3(nullptr, any_func);  // nullptr and specify deleter
+    assert(bool_test());
     return 0;
 }
