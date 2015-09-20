@@ -9,9 +9,7 @@ SOURCES += \
 
 QMAKE_CXXFLAGS += -std=c++11
 
-include(deployment.pri)
-qtcAddDeployment()
-
 HEADERS += \
+    ring_queue_template.h \
     ring_queue.h
 
