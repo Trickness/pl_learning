@@ -1,7 +1,8 @@
 #ifndef RING_QUEUE_TEMPLATE_H
 #define RING_QUEUE_TEMPLATE_H
 #include <iostream>
-#include <memory>
+#include <memory>       // unique_ptr (C++14)
+#include <string.h>     // for memcpy
 #include <stdint.h>
 #include <pthread.h>
 #include <vector>
@@ -10,15 +11,17 @@ template <typename T>
 class ring_queue{
 public:
     explicit    ring_queue(size_t queue_size = 512);
-    explicit    ring_queue(const class ring_queue&);
-                ~ring_queue(void);
+    virtual     ~ring_queue(void);
     std::size_t unread(void);
     bool        is_full(void);
     bool        is_empty(void);
     bool        push(T value);
-    std::shared_ptr<T>  fetch(void);
+    std::unique_ptr<T>  fetch(void);
     void        clear(void);
     std::size_t queue_size(void);
+    
+protected:
+    explicit    ring_queue(const class ring_queue&);
 
 private:
     T*              queue;
@@ -67,12 +70,12 @@ inline bool ring_queue<T>::push(T value){
 }
 
 template<typename T>
-inline std::shared_ptr<T> ring_queue<T>::fetch(){
+inline std::unique_ptr<T> ring_queue<T>::fetch(){
     if(this->is_empty()){
         return nullptr;
     }else{
         this->queue_rear = (this->queue_rear + 1)%this->queue_size_max;
-        return std::make_shared<T>(this->queue[(this->queue_rear-1+this->queue_size_max)%this->queue_size_max]);
+        return std::make_unique<T>(this->queue[(this->queue_rear-1+this->queue_size_max)%this->queue_size_max]);
     }
 }
 
