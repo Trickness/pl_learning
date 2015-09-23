@@ -1,16 +1,19 @@
 #ifndef RING_QUEUE_TEMPLATE_H
 #define RING_QUEUE_TEMPLATE_H
+
+namespace{
 #include <iostream>
 #include <memory>       // unique_ptr (C++14)
 #include <string.h>     // for memcpy
 #include <stdint.h>
 #include <pthread.h>
 #include <vector>
+}
 
 template <typename T>
 class ring_queue{
 public:
-    explicit    ring_queue(size_t queue_size = 512);
+    explicit    ring_queue(size_t queue_size);
     virtual     ~ring_queue(void);
     std::size_t unread(void);
     bool        is_full(void);
@@ -20,10 +23,8 @@ public:
     void        clear(void);
     std::size_t queue_size(void);
     
-protected:
     explicit    ring_queue(const class ring_queue&);
-
-private:
+protected:
     T*              queue;
     uint32_t        queue_front;
     uint32_t        queue_rear;
