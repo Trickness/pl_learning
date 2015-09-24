@@ -7,6 +7,7 @@
 using namespace std;
 
 int main(){
+    auto shared_queue = make_ring_queue_writer<int>(23);
     ring_queue<int> s(10);
     for(int i=0;i<10;i++)
         s.push(i);
