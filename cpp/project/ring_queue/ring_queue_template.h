@@ -6,32 +6,31 @@ namespace{
 #include <memory>       // unique_ptr (C++14)
 #include <string.h>     // for memcpy
 #include <stdint.h>
-#include <pthread.h>
-#include <vector>
 }
 
 template <typename T>
 class ring_queue{
 public:
     explicit    ring_queue(size_t queue_size);
-    virtual     ~ring_queue(void);
+    ~ring_queue(void);
     std::size_t unread(void);
     bool        is_full(void);
     bool        is_empty(void);
-    bool        push(T value);
-    std::unique_ptr<T>  fetch(void);
-    void        clear(void);
+    virtual bool                push(T value);
+    virtual std::unique_ptr<T>  fetch(void);
+    //virtual ring_queue<T> get(void);
+    virtual void                clear(void);
     std::size_t queue_size(void);
+
+    ring_queue(const ring_queue&) = delete;               //
+    ring_queue & operator=(const ring_queue&) = delete;   //  makes this class noncopyable
     
-    explicit    ring_queue(const class ring_queue&);
 protected:
     T*              queue;
     uint32_t        queue_front;
     uint32_t        queue_rear;
     std::size_t     queue_size_max;
 };
-
-
 
 template<typename T>
 ring_queue<T>::ring_queue(size_t queue_size):
@@ -65,7 +64,7 @@ inline bool ring_queue<T>::push(T value){
         std::cout << "Queue overflowing" << std::endl;
         return false;
     }
-    memcpy((void*)&(this->queue[this->queue_front]),(void*)&value,sizeof(T));
+    memcpy((void*)&(this->queue[this->queue_front]),(void*)&value,sizeof(value));      // use sizeof(value) instead of sizeof(T)
     this->queue_front = (this->queue_front + 1)%this->queue_size_max;
     return true;
 }
