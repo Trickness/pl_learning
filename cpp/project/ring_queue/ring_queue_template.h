@@ -6,6 +6,9 @@ namespace{
 #include <memory>       // unique_ptr (C++14)
 #include <string.h>     // for memcpy
 #include <stdint.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <error.h>
 }
 
 template <typename T>
@@ -18,24 +21,25 @@ public:
     bool        is_empty(void);
     virtual bool                push(T value);
     virtual std::unique_ptr<T>  fetch(void);
-    //virtual ring_queue<T> get(void);
     virtual void                clear(void);
     std::size_t queue_size(void);
 
-    ring_queue(const ring_queue&) = delete;               //
+    ring_queue(const ring_queue&) = delete;
     ring_queue & operator=(const ring_queue&) = delete;   //  makes this class noncopyable
     
 protected:
-    T*              queue;
-    uint32_t        queue_front;
-    uint32_t        queue_rear;
-    std::size_t     queue_size_max;
+    T*          queue;
+    uint32_t    queue_front;
+    uint32_t    queue_rear;
+    std::size_t queue_size_max;
+    sem_t*      unread_sema;
 };
 
 template<typename T>
 ring_queue<T>::ring_queue(size_t queue_size):
     queue_front(0),queue_rear(0),queue_size_max(queue_size+1){
     this->queue = new T[this->queue_size_max];
+    sem_init(this->unread_sema,0,0);
 }
 
 template<typename T>
@@ -66,14 +70,28 @@ inline bool ring_queue<T>::push(T value){
     }
     memcpy((void*)&(this->queue[this->queue_front]),(void*)&value,sizeof(value));      // use sizeof(value) instead of sizeof(T)
     this->queue_front = (this->queue_front + 1)%this->queue_size_max;
+    sem_post(this->unread_sema);
     return true;
 }
 
 template<typename T>
 inline std::unique_ptr<T> ring_queue<T>::fetch(){
-    if(this->is_empty()){
-        return nullptr;
-    }else{
+    for(;;){
+        if(sem_wait(this->unread_sema) == -1){
+            int local_errno = errno;
+            if(local_errno == EINTR){  // interrupted by signal()
+                perror("ring_queue::fetch(): ");
+                return nullptr;
+            }else if(local_errno == EINVAL){    // Not a valid semaphore
+                perror("ring_queue::fetch(): ");
+                return nullptr;
+            }else if(local_errno == EAGAIN){
+                continue;           // Should I try again or return nullptr?
+            }else{
+                perror("ring_queue::fetch(): ");
+                return nullptr;
+            }
+        }
         this->queue_rear = (this->queue_rear + 1)%this->queue_size_max;
         return std::make_unique<T>(this->queue[(this->queue_rear-1+this->queue_size_max)%this->queue_size_max]);
     }
