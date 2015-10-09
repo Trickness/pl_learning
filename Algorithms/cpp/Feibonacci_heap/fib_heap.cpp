@@ -14,5 +14,5 @@ class fib_heap{
         void destroy(void);
 
         fib_heap<T>* p;
-        fib_heap<T>* ;
+        double_linked_list<T> child;
 };
