@@ -23,7 +23,8 @@ class double_linked_list{
     public:
         double_linked_list(void);
         ~double_linked_list(void);
-        size_t len(void);
+        const size_t& len(void);
+        const size_t len(void);
         void list_insert(double_linked_list_node<T>* x);
         void list_insert(T* value);
         void list_insert(T value);
@@ -45,6 +46,7 @@ class double_linked_list{
         bool list_delete(T  value);
         void list_clear(void);  //  It maybe cause memory leaking....
         void list_destroy(void);
+        void list_print(void);
     protected:
         size_t length;
         double_linked_list_node<T> *head;
@@ -102,7 +104,12 @@ void double_linked_list<T>::list_destroy(void){
 
 
 template<typename T>
-inline size_t double_linked_list<T>::len(void){
+inline const size_t double_linked_list<T>::len(void){
+    return this->length;
+}
+
+template<typename T>
+inline const size_t& double_linked_list<T>::len(void){
     return this->length;
 }
 
@@ -147,6 +154,70 @@ inline void double_linked_list<T>::list_insert_left(double_linked_list_node<T>* 
         T value){
     auto x = new double_linked_list_node<T>(value);
     return this->list_insert_left(fiducial_node,x);
+}
+
+template<typename T>
+void double_linked_list<T>::list_insert_left(double_linked_list_node<T>* f,
+        double_linked_list<T> &list){
+    if(list.len() == 0)
+        return;
+    auto x = list.list_head();
+    if(this->length == 0){
+        this->head = x;
+        this->length = list.len();
+        list.list_clear();
+        return;
+    }
+    auto t = f;
+    if(f == nullptr)
+        t = this->head;
+    else
+        if(!this->list_search(f))
+            return;
+
+    this->length += list.len();
+    list.list_clear();
+
+    auto y = t->left;
+    auto z = x->right;
+
+    y->right = z;
+    z->left = y;
+
+    x->right = t;
+    t->left = x;
+}
+
+template<typename T>
+void double_linked_list<T>::list_insert_right(double_linked_list_node<T>* f,
+        double_linked_list<T> &list){
+    if(list.len() == 0)
+        return;
+    auto x = list.list_head();
+    if(this->length == 0){
+        this->head = x;
+        this->length = list.len();
+        list.clear();
+        return;
+    }
+    auto t = f;
+    if(f == nullptr)
+        t = this->head;
+    else
+        if(!this->list_search(f))
+            return;
+
+    this->length += list.len();
+    list.list_clear();
+
+    auto y = t->right;
+    auto z = x->right;
+
+    y->left = x;
+    z->left = t;
+
+    x->right = y;
+    t->right = z;
 }
 
 template<typename T>
@@ -230,6 +301,8 @@ void double_linked_list<T>::list_insert(double_linked_list<T> &list){
 
 template<typename T>
 double_linked_list_node<T>* double_linked_list<T>::list_search(T* value){
+    if(value == nullptr)
+        return nullptr;
     if(this->head->key == value)
         return this->head;
     for(auto x=this->head->next;x!=this->head;x=x->next)
@@ -250,6 +323,8 @@ double_linked_list_node<T>* double_linked_list<T>::list_search(T  value){
 
 template<typename T>
 double_linked_list_node<T>* double_linked_list<T>::list_search(double_linked_list_node<T>*value){
+    if(value == nullptr)
+        return nullptr;
     if(this->head == value)
         return this->head;
     for(auto x=this->head->next;x!=this->head;x=x->next)
@@ -284,6 +359,18 @@ inline bool double_linked_list<T>::list_delete(T *value){
 template<typename T>
 inline bool double_linked_list<T>::list_delete(T  value){
     return this->list_delete(this->list_search(value));
+}
+
+template<typename T>
+void double_linked_list<T>::list_print(void){
+    auto x=this->head;
+    std::cout << "----LIST_PRINT_START----" << std::endl;
+    std::cout << "List has " << this->length << " members" << std::endl;
+    for(int i=0;i<this->length;++i){
+        std::cout << "Number: "<< i << " : " << *(x->key) << std::endl;
+        x = x->next;
+    }
+    std::cout << "----LIST_PRINT_END------" << std::endl;
 }
 
 #endif
