@@ -24,7 +24,6 @@ class double_linked_list{
         double_linked_list(void);
         ~double_linked_list(void);
         const size_t& len(void);
-        const size_t len(void);
         void list_insert(double_linked_list_node<T>* x);
         void list_insert(T* value);
         void list_insert(T value);
@@ -102,11 +101,6 @@ void double_linked_list<T>::list_destroy(void){
     curr = nullptr;
 }
 
-
-template<typename T>
-inline const size_t double_linked_list<T>::len(void){
-    return this->length;
-}
 
 template<typename T>
 inline const size_t& double_linked_list<T>::len(void){
