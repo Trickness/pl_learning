@@ -1,3 +1,6 @@
+/*
+ * g++ -o test rvalue.cpp -std=gnu++14 -fno-elide-constructors
+ * */
 #include <iostream>
 using namespace std;
 
